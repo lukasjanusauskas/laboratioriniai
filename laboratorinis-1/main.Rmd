@@ -5,4 +5,5 @@ output:
 ---
 
 # 1 Laboratorinis darbas
+## Skirstinys: 
 
