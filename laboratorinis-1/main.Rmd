@@ -92,3 +92,35 @@ sapply(imtys, function(x)
   paste(length(x), "dydžio imties parametro įvertinys", mean(x)))
 ```
 
+8. Didžiausio tikėtinumo metodu taip pat gavome įverčius. Tačiau, kadangi skaičiavimai
+per daug komplikuoti, naudojomės `optim` funkcija.
+
+```{r}
+# install.packages('likelihoodExplore')
+library(likelihoodExplore)
+
+pakoreguota_tiketinumo <- function(x, par) {
+  # Pakoreguojame tikėtinumo funkciją, kad tiktų optim funkcijai
+  return( -1 * likchisq(x=x, df=par) )
+}
+
+mle_chisq_ivertis <- function(imtis) {
+  res <- optim(par=c(1),                  # Pradedame nuo 1
+               fn=pakoreguota_tiketinumo, # Pakoreguojame tikėtinumo funkciją
+               method="L-BFGS-B",         # Naudojame L-BFGS optimizatorių
+               x=imtis)
+  return ( res$par )
+}
+
+
+sapply(imtys, function(x) 
+  paste(length(x), "dydžio imties parametro įvertinys", mle_chisq_ivertis(x)))
+
+```
+
+9. Palyginkime 7 ir 8 punktuose gautus rezultatus
+
+Nors, davus mažą imtį, gauti geresni rezultatai, panaudojus didžiausio tikėtinumo metodą,
+tačiau momentų metodo įverčiai, iš rezultatų atrodo, greičiau konverguoja link tikrojo parametro(5).
+
+
