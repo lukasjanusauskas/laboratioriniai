@@ -77,6 +77,8 @@ suppressWarnings({
 })
 ```
 
+Nubrėžę empirines pasiskirstymo funkcijas pastebime, kad didesnių imčių empirinės pasiskirstymo funkcijos geriau aproksimuoja tikrąją p.f.
+
 7.  Momentų metodu išvestas parametro $k$ įvertinys:
 
 Remiantis 3. punktu prisimename, kad $EX = k$. Pirmasis žingsnis, sudarant įverčius momentų metodu yra momentų prilyginimas empiriniams momentams. Taigi $EX$ prilyginame $\overline{X}$. Gauname parametro $k$ įvertinį $\widetilde{k}$:
@@ -92,6 +94,8 @@ imtys <- list(imtis1, imtis2, imtis3, imtis4)
 sapply(imtys, function(x) 
   paste(length(x), "dydžio imties parametro įvertinys", mean(x)))
 ```
+
+Vėl, kuo didesnė imtis, tuo geriau aproksimuojame skirstinio parametrą $k$. 
 
 8.  Didžiausio tikėtinumo metodu taip pat gavome įverčius. Tačiau, kadangi skaičiavimai per daug komplikuoti, naudojomės `optim` funkcija.
 
@@ -121,6 +125,7 @@ sapply(imtys, function(x)
 9.  Palyginkime 7 ir 8 punktuose gautus rezultatus
 
 Nors, davus mažą imtį, gauti geresni rezultatai, panaudojus didžiausio tikėtinumo metodą, tačiau momentų metodo įverčiai, iš rezultatų atrodo, greičiau konverguoja link tikrojo parametro(5).
+Be abejo, abejais atvejais kuo didesnė imtis, tuo geresnė parametro aproksimacija.
 
 10. Parametrų patikimumo intervalai
 
@@ -163,3 +168,7 @@ lapply(imtys, function(x)
   paste(length(x), "dydžio imties parametro pasikliautinio intervalo rėžiai",
         confidence_interval_chisq(x, 0.9)))
 ```
+
+Matome, kad 50 objektų imtyje patikimumo intervalas pasislinko į kairę.
+Nors didesnės imties patikimumo intervalo apatinis rėžis yra toliau, turime turėti omenyje, kad vidurkis yra mažesnis,
+todėl ne patikimumo intervalas yra platesnis, bet. Vietoj to reikėtų pažiūrėti į aplitiudę intervalo.
