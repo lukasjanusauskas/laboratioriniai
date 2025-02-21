@@ -171,6 +171,7 @@ imtis1_kvartiliai <- quantile(imtis1, c(0.25, 0.5, 0.75))
 imtis2_kvartiliai <- quantile(imtis2, c(0.25, 0.5, 0.75))
 imtis3_kvartiliai <- quantile(imtis3, c(0.25, 0.5, 0.75))
 imtis4_kvartiliai <- quantile(imtis4, c(0.25, 0.5, 0.75))
+print(list(imtis1_kvartiliai, imtis2_kvartiliai, imtis3_kvartiliai, imtis4_kvartiliai))
 ```
 
 12. Prie 6 punkte gautų duomenų rinkinių pridėjome po 5 išskirtis.
@@ -180,6 +181,7 @@ imtis1_isskirtys <- c(imtis1, 25, 30, 35, 40, 43)
 imtis2_isskirtys <- c(imtis2, 15, 17, 18, 20, 21)
 imtis3_isskirtys <- c(imtis3, 30, 34, 39, 42, 43)
 imtis4_isskirtys <- c(imtis4, 35, 39, 42, 46, 48)
+print(list(imtis1_isskirtys, imtis2_isskirtys, imtis3_isskirtys, imtis4_isskirtys))
 ```
 
 13. Nubraižėme po stačiakampę diagramą kiekvienam 12 dalies duomenų rinkiniui
@@ -191,6 +193,7 @@ boxplot(imtis2_isskirtys)
 boxplot(imtis3_isskirtys)
 boxplot(imtis4_isskirtys)
 ```
+Stačiakampės diagramos identifikuoja įrašytas išskirtis.
 
 14. Radome 6 punkto imčių Puasono skirstinių kvartilius.
 
