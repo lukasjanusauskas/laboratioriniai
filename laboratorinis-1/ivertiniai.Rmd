@@ -11,64 +11,105 @@ k <- 5
 n <- c(20, 50, 200, 1000)
 
 set.seed(42)
+imtis1 <- rchisq(n[1], df=k)
 
-imtis1 <- rchisq(n[1], k)
-imtis2 <- rchisq(n[2], k)
-imtis3 <- rchisq(n[3], k)
-imtis4 <- rchisq(n[4], k)
+set.seed(42)
+imtis2 <- rchisq(n[2], df=k)
+
+set.seed(42)
+imtis3 <- rchisq(n[3], df=k)
+
+set.seed(42)
+imtis4 <- rchisq(n[4], df=k)
+
+imtys <- list(imtis1, imtis2, imtis3, imtis4)
 ```
 
 6a) Nubrėžėme histogramas
 
 ```{r}
 # Apibrėžiame pagalbinę funkciją, kadangi grafikai labai panašūs
-plot_chisq_sample <- function(sample) {
-  # sample - imtis, kurią įdedame į funkciją
+plot_chisq_sample <- function(samples) {
+  # samples - imčių vektorius
   
-  # Sudarome pavadinimą, į kurį įeis imties dydis
-  imties_dydis <- length(sample)
-  pavadinimas <- paste0("Imties dydis: ", imties_dydis)
+  # Imtis paverčiame duomenų lentelėmis ir jas sujungiame
+  dt <- lapply(samples, function(x) {
+    data.frame.out <- data.frame(x)
+    data.frame.with.lengths <- data.frame.out %>% 
+      mutate("Imties.dydis" = length(x))
+    return(data.frame.with.lengths)
+  })
   
-  # Nubrėžiame histogramą
-  hist(sample, main=pavadinimas,
-       xlab = "X", ylab = "",
-       freq = TRUE)
+  df <- do.call(rbind, dt)
+  
+  # Dėl įskaitomumo pervardiname imties dydžio stuleplį
+  labels.dydziu <- sapply(n, function(x) paste("Imties dydis:", x))
+  df <- df %>% 
+    mutate("Imties.dydis" = factor(Imties.dydis, labels=labels.dydziu))
+  
+  # Nubrėžiame histogramas
+  df %>% 
+    ggplot(aes(x=x)) +
+      geom_histogram(bins = 10, color = "#619CFF", fill="#dfebff") +
+      facet_wrap(~Imties.dydis, scales = "free") +
+      theme_minimal() +
+      xlab("") +
+      ylab("Dažnis") +
+      ggtitle("Histogramos visoms sugeneruotoms imtims")
 }
 
-par(mfrow=c(2,2))
-plot_chisq_sample(imtis1)
-plot_chisq_sample(imtis2)
-plot_chisq_sample(imtis3)
-plot_chisq_sample(imtis4)
+plot_chisq_sample(imtys)
 ```
 
 6b) Empirinės pasiskirstymo funkcijos mūsų darbe imčių pasiskistymo funkcijos pateikiamos su teorine pasiskirstymo funkcija.
 
 ```{r}
-nubrezti_chisq_empirini <- function(sample, df=5) {
-  # sample - imtis.
+nubrezti_chisq_empirini <- function(samples, k=5) {
+  # samples - imtiys.
   # df - chi kvadratu parametras
   
-  # Sudarome pavadinimą
-  imties_dydis <- length(sample)   
-  pavadinimas <- paste0("Imties dydis: ", imties_dydis)
+  # samples - imčių vektorius
   
-  # Nubrėžiame empirinę pasiskirstymo funkciją
-  plot(ecdf(sample), main=pavadinimas)
+  # Imtis paverčiame duomenų lentelėmis ir jas sujungiame
+  dt <- lapply(samples, function(x) {
+    seq.x <- seq(min(x), max(x), length.out=1000)
+    
+    data.frame.out <- data.frame(seq.x,             # Įdedame seką
+                                 ecdf(x)(seq.x),    # Įdedame emp. p.f.
+                                 pchisq(seq.x, k))  # Įdedame p.f.
+    
+    data.frame.with.lengths <- data.frame.out %>% 
+      mutate("Imties.dydis" = length(x))
+    
+    return(data.frame.with.lengths)
+  })
+  
+  df <- do.call(rbind, dt)
+  
+  # Dėl įskaitomumo pervardiname imties dydžio stuleplį
+  labels.dydziu <- sapply(n, function(x) paste("Imties dydis:", x))
+  df <- df %>% 
+    mutate("Imties.dydis" = factor(Imties.dydis, labels=labels.dydziu))
   
   # Nubrėžiame teorinę pasiskirstymo funkciją
-  x <- seq(min(sample), max(sample), by=0.01)
-  lines(x, pchisq(x, df), col = 'red')
+  df %>% 
+    ggplot(aes(x = seq.x)) +
+      geom_line(aes(y = ecdf.x..seq.x., color="Empirinė p.f."), 
+                linewidth = 1) +
+      geom_line(aes(y = pchisq.seq.x..k., color="Teorinė p.f."),
+                linewidth = 1) +
+    facet_wrap(~Imties.dydis, scales = "free") +
+    theme_minimal() +
+    labs(x = "Reikšmės",
+         y = "(Empirinė) pasiskirstymo funkcija",
+         title = "Empirinė ir teorinė pasiskirstymo funkcijos") +
+    scale_color_manual("P.f. tipas",
+                       breaks = c("Empirinė p.f.", "Teorinė p.f."),
+                       values = c("#619CFF", "#F8766D"))
+    
 }
 
-par(mfrow=c(2,2))
-
-suppressWarnings({
-  nubrezti_chisq_empirini(imtis1)
-  nubrezti_chisq_empirini(imtis2)
-  nubrezti_chisq_empirini(imtis3)
-  nubrezti_chisq_empirini(imtis4)
-})
+nubrezti_chisq_empirini(imtys)
 ```
 
 Nubrėžę empirines pasiskirstymo funkcijas pastebime, kad didesnių imčių empirinės pasiskirstymo funkcijos geriau aproksimuoja tikrąją p.f.

@@ -81,6 +81,8 @@ Brėžiame tankio funkcijų grafiką.
 
 ```{r}
 library(ggplot2)
+# install.packages("latex2exp")
+library(latex2exp)
 
 x <- seq(0, 50, 0.1)
 
@@ -99,7 +101,8 @@ ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
   scale_color_discrete(name = "Laisvės laipsnis")+
   labs(y = "Tikimybių tankis",
        x = "Reikšmės")+
-  theme_minimal()
+  theme_minimal() +
+  ggtitle(TeX("$\\chi^2$ tankio funkcija"))
 
 ```
 
@@ -119,9 +122,10 @@ df <- rbind(df1, df2, df3)
 ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
   geom_line(linewidth=1)+
   scale_color_discrete(name = "Laisvės laipsnis")+
-  labs(y = "komuliatyvi tikimybė",
+  labs(y = "Pasiskirstymo funkcijos reikšmės",
        x = "Reikšmės")+
-  theme_minimal()
+  theme_minimal() +
+  ggtitle(TeX("$\\chi^2$ pasiskirstymo funkcija"))
 
 ```
 
@@ -155,9 +159,9 @@ df <- do.call(rbind, df_list)
 ggplot(df, aes(x = p, y = q, color = df)) +
   geom_line(linewidth = 1) +
   scale_color_discrete(name = "Laisvės laipsniai") +
-  labs(title = "Chi kvadrato kvantilių funkcija ",
+  labs(title = TeX("$\\chi^2$ kvantilių funkcija "),
        x = "Tikimybė (p)",
-       y = "Kvantilis Q(p)") +
+       y = "Kvantilis x(p)") +
   theme_minimal()
 
 ```

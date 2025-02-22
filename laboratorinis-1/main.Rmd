@@ -10,6 +10,11 @@ output:
 
 Skirstinys: $\chi^2$
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 ## 1 užduotis
 
 Chi kvadrato skirstinys (žymimas $\chi^2(k)$) yra tikimybinis skirstinys, kuris atsiranda sumuojant k Nepriklausomų normaliųjų kintamųjų kvadratai (kai vidurkis 0, o dispersija 1).
@@ -81,6 +86,8 @@ Brėžiame tankio funkcijų grafiką.
 
 ```{r}
 library(ggplot2)
+# install.packages("latex2exp")
+library(latex2exp)
 
 x <- seq(0, 50, 0.1)
 
@@ -99,7 +106,8 @@ ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
   scale_color_discrete(name = "Laisvės laipsnis")+
   labs(y = "Tikimybių tankis",
        x = "Reikšmės")+
-  theme_minimal()
+  theme_minimal() +
+  ggtitle(TeX("$\\chi^2$ tankio funkcija"))
 
 ```
 
@@ -119,9 +127,10 @@ df <- rbind(df1, df2, df3)
 ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
   geom_line(linewidth=1)+
   scale_color_discrete(name = "Laisvės laipsnis")+
-  labs(y = "komuliatyvi tikimybė",
+  labs(y = "Pasiskirstymo funkcijos reikšmės",
        x = "Reikšmės")+
-  theme_minimal()
+  theme_minimal() +
+  ggtitle(TeX("$\\chi^2$ pasiskirstymo funkcija"))
 
 ```
 
@@ -155,85 +164,131 @@ df <- do.call(rbind, df_list)
 ggplot(df, aes(x = p, y = q, color = df)) +
   geom_line(linewidth = 1) +
   scale_color_discrete(name = "Laisvės laipsniai") +
-  labs(title = "Chi kvadrato kvantilių funkcija ",
+  labs(title = TeX("$\\chi^2$ kvantilių funkcija "),
        x = "Tikimybė (p)",
-       y = "Kvantilis Q(p)") +
+       y = "Kvantilis x(p)") +
   theme_minimal()
 
 ```
 
 Chi kvadrato pasiskirstymas su didesniu laisvės laipsniu tampa vis panašesnis į normalųjį pasiskirstymą, kuo didesnis laisvės laipsnis, tuo kvantiliai lėčiau auga ir įgauna vis simetriškesnę formą.
 
-6.  Fiksavome, pasirinktą a.d. parametrų rinkinį (`k=5`). Sugeneravome $\chi^2_5$ duomenų rinkinius su 20, 50, 200, 1000 imčių dydžiais.
+## 6 užduotis
+
+Fiksavome, pasirinktą a.d. parametrų rinkinį (`k=5`). Sugeneravome $\chi^2_5$ duomenų rinkinius su 20, 50, 200, 1000 imčių dydžiais.
 
 ```{r}
 k <- 5
 n <- c(20, 50, 200, 1000)
 
 set.seed(42)
+imtis1 <- rchisq(n[1], df=k)
 
-imtis1 <- rchisq(n[1], k)
-imtis2 <- rchisq(n[2], k)
-imtis3 <- rchisq(n[3], k)
-imtis4 <- rchisq(n[4], k)
+set.seed(42)
+imtis2 <- rchisq(n[2], df=k)
+
+set.seed(42)
+imtis3 <- rchisq(n[3], df=k)
+
+set.seed(42)
+imtis4 <- rchisq(n[4], df=k)
+
+imtys <- list(imtis1, imtis2, imtis3, imtis4)
 ```
 
-6a) Nubrėžėme histogramas
+### Nubrėžėme histogramas
 
 ```{r}
 # Apibrėžiame pagalbinę funkciją, kadangi grafikai labai panašūs
-plot_chisq_sample <- function(sample) {
-  # sample - imtis, kurią įdedame į funkciją
+library(tidyr)
+library(dplyr)
+
+plot_chisq_sample <- function(samples) {
+  # samples - imčių vektorius
   
-  # Sudarome pavadinimą, į kurį įeis imties dydis
-  imties_dydis <- length(sample)
-  pavadinimas <- paste0("Imties dydis: ", imties_dydis)
+  # Imtis paverčiame duomenų lentelėmis ir jas sujungiame
+  dt <- lapply(samples, function(x) {
+    data.frame.out <- data.frame(x)
+    data.frame.with.lengths <- data.frame.out %>% 
+      mutate("Imties.dydis" = length(x))
+    return(data.frame.with.lengths)
+  })
   
-  # Nubrėžiame histogramą
-  hist(sample, main=pavadinimas,
-       xlab = "X", ylab = "",
-       freq = TRUE)
+  df <- do.call(rbind, dt)
+  
+  # Dėl įskaitomumo pervardiname imties dydžio stuleplį
+  labels.dydziu <- sapply(n, function(x) paste("Imties dydis:", x))
+  df <- df %>% 
+    mutate("Imties.dydis" = factor(Imties.dydis, labels=labels.dydziu))
+  
+  # Nubrėžiame histogramas
+  df %>% 
+    ggplot(aes(x=x)) +
+      geom_histogram(bins = 10, color = "#619CFF", fill="#dfebff") +
+      facet_wrap(~Imties.dydis, scales = "free") +
+      theme_minimal() +
+      xlab("") +
+      ylab("Dažnis") +
+      ggtitle("Histogramos visoms sugeneruotoms imtims")
 }
 
-par(mfrow=c(2,2))
-plot_chisq_sample(imtis1)
-plot_chisq_sample(imtis2)
-plot_chisq_sample(imtis3)
-plot_chisq_sample(imtis4)
+plot_chisq_sample(imtys)
 ```
 
-6b) Empirinės pasiskirstymo funkcijos mūsų darbe imčių pasiskistymo funkcijos pateikiamos su teorine pasiskirstymo funkcija.
+### Empirinės pasiskirstymo funkcijos mūsų darbe imčių pasiskistymo funkcijos pateikiamos su teorine pasiskirstymo funkcija.
 
 ```{r}
-nubrezti_chisq_empirini <- function(sample, df=5) {
-  # sample - imtis.
+nubrezti_chisq_empirini <- function(samples, k=5) {
+  # samples - imtiys.
   # df - chi kvadratu parametras
   
-  # Sudarome pavadinimą
-  imties_dydis <- length(sample)   
-  pavadinimas <- paste0("Imties dydis: ", imties_dydis)
+  # samples - imčių vektorius
   
-  # Nubrėžiame empirinę pasiskirstymo funkciją
-  plot(ecdf(sample), main=pavadinimas)
+  # Imtis paverčiame duomenų lentelėmis ir jas sujungiame
+  dt <- lapply(samples, function(x) {
+    seq.x <- seq(min(x), max(x), length.out=1000)
+    
+    data.frame.out <- data.frame(seq.x,             # Įdedame seką
+                                 ecdf(x)(seq.x),    # Įdedame emp. p.f.
+                                 pchisq(seq.x, k))  # Įdedame p.f.
+    
+    data.frame.with.lengths <- data.frame.out %>% 
+      mutate("Imties.dydis" = length(x))
+    
+    return(data.frame.with.lengths)
+  })
+  
+  df <- do.call(rbind, dt)
+  
+  # Dėl įskaitomumo pervardiname imties dydžio stuleplį
+  labels.dydziu <- sapply(n, function(x) paste("Imties dydis:", x))
+  df <- df %>% 
+    mutate("Imties.dydis" = factor(Imties.dydis, labels=labels.dydziu))
   
   # Nubrėžiame teorinę pasiskirstymo funkciją
-  x <- seq(min(sample), max(sample), by=0.01)
-  lines(x, pchisq(x, df), col = 'red')
+  df %>% 
+    ggplot(aes(x = seq.x)) +
+      geom_line(aes(y = ecdf.x..seq.x., color="Empirinė p.f."), 
+                linewidth = 1) +
+      geom_line(aes(y = pchisq.seq.x..k., color="Teorinė p.f."),
+                linewidth = 1) +
+    facet_wrap(~Imties.dydis, scales = "free") +
+    theme_minimal() +
+    labs(x = "Reikšmės",
+         y = "(Empirinė) pasiskirstymo funkcija",
+         title = "Empirinė ir teorinė pasiskirstymo funkcijos") +
+    scale_color_manual("P.f. tipas",
+                       breaks = c("Empirinė p.f.", "Teorinė p.f."),
+                       values = c("#619CFF", "#F8766D"))
+    
 }
 
-par(mfrow=c(2,2))
-
-suppressWarnings({
-  nubrezti_chisq_empirini(imtis1)
-  nubrezti_chisq_empirini(imtis2)
-  nubrezti_chisq_empirini(imtis3)
-  nubrezti_chisq_empirini(imtis4)
-})
+nubrezti_chisq_empirini(imtys)
 ```
 
 Nubrėžę empirines pasiskirstymo funkcijas pastebime, kad didesnių imčių empirinės pasiskirstymo funkcijos geriau aproksimuoja tikrąją p.f.
 
-7.  Momentų metodu išvestas parametro $k$ įvertinys:
+## 7 užduotis
 
 Remiantis 3. punktu prisimename, kad $EX = k$. Pirmasis žingsnis, sudarant įverčius momentų metodu yra momentų prilyginimas empiriniams momentams. Taigi $EX$ prilyginame $\overline{X}$. Gauname parametro $k$ įvertinį $\widetilde{k}$:
 
@@ -251,7 +306,7 @@ sapply(imtys, function(x)
 
 Vėl, kuo didesnė imtis, tuo geriau aproksimuojame skirstinio parametrą $k$. 
 
-8.  Didžiausio tikėtinumo metodu taip pat gavome įverčius. Tačiau, kadangi skaičiavimai per daug komplikuoti, naudojomės `optim` funkcija.
+## 8 užduotis
 
 ```{r}
 # install.packages('likelihoodExplore')
@@ -276,12 +331,12 @@ sapply(imtys, function(x)
 
 ```
 
-9.  Palyginkime 7 ir 8 punktuose gautus rezultatus
+## 9 užduotis
 
 Nors, davus mažą imtį, gauti geresni rezultatai, panaudojus didžiausio tikėtinumo metodą, tačiau momentų metodo įverčiai, iš rezultatų atrodo, greičiau konverguoja link tikrojo parametro(5).
 Be abejo, abejais atvejais kuo didesnė imtis, tuo geresnė parametro aproksimacija.
 
-10. Parametrų patikimumo intervalai
+## 10 užduotis
 
 Iš $\chi^2$ apibrėžimo žinome, kad a.d. $X \sim \chi^2_k$, jei $X = \sum_{i=1}^{k} N_i$, kur $N_i \sim N(0,1)$. Todėl, $n$ dydžio imties empirinio vidurkio skirstinį nustatome štai taip:
 
@@ -326,7 +381,6 @@ lapply(imtys, function(x)
 Matome, kad 50 objektų imtyje patikimumo intervalas pasislinko į kairę.
 Nors didesnės imties patikimumo intervalo apatinis rėžis yra toliau, turime turėti omenyje, kad vidurkis yra mažesnis,
 todėl ne patikimumo intervalas yra platesnis, bet. Vietoj to reikėtų pažiūrėti į aplitiudę intervalo.
-
 11. Apskaičiavome 6 dalyje gautų duomenų rinkinių su 20, 50, 200, 1000 imčių dydžiais kvartillius. 
 
 ```{r}
