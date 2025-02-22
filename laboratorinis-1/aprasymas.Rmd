@@ -1,0 +1,165 @@
+---
+title: "Statistika"
+author: "Arnas"
+date: "2025-02-21"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1 užduotis
+
+Chi kvadrato skirstinys (žymimas $\chi^2(k)$) yra tikimybinis skirstinys, kuris atsiranda sumuojant k Nepriklausomų normaliųjų kintamųjų kvadratai (kai vidurkis 0, o dispersija 1).
+
+Matematiškai, jei $Z_1, Z_2, ..., Z_k$ yra nepriklausomi standartiniai normalieji atsitiktiniai dydžiai (tai tokie tokie dydžiai kurių vidurkis 0 ir dispersija 1): $Z_i \sim N(0,1)$ tada jų kvadratų suma seka chi kvadrato skirstinį su k laisvės laipsniais: \begin{equation} 
+  X = \sum_{i=1}^{k} Z_i^2 \sim \chi^2(k) 
+\end{equation}
+
+### Taikymas
+
+Chi kvadrato skirstinys yra labai svarbus statistikoje, ypač hipotezių tikrinimui ir dispersijos analizei.
+
+1.  Chi kvadrato nepriklausomumo testas
+
+Naudojamas nustatyti, ar duomenų lentelės kintamieji yra nepriklausomi.
+
+Pvz., ar žmonių rūkymo įpročiai priklauso nuo jų lyties?
+
+2.  Gerumo įvertinimo testas
+
+Tikrina, ar stebėti duomenys atitinka teorinį pasiskirstymą.
+
+Pvz., ar kauliuko metimo rezultatai atitinka tolygų pasiskirstymą?
+
+3.  Dispersijos analizė
+
+Naudojamas pasikliautiniams intervalams populiacijos dispersijai įvertinti.
+
+Pvz., ar skirtingose mokyklose mokinių pažymių dispersija yra vienoda?
+
+## 2 užduotis
+
+## Tikimybės tankio funkcija:
+
+```{=tex}
+\begin{equation}
+f(x;\,k) =
+\begin{cases}
+  \dfrac{x^{k/2 -1} e^{-x/2}}{2^{k/2} \Gamma\left(\frac k 2 \right)}, & x > 0; \\ 0, & \text{kitais atvejais}.
+\end{cases}
+\end{equation}
+```
+Kur $display="\Gamma(k/2)$ reiškia gamma funkciją, kuri turi uždaras formas (užbaigtas išraiškas) reikšmėms sveikaisiais $k$.
+
+## Kumuliatyvi pasiskirstymo funkcija:
+
+```{=tex}
+\begin{equation}
+F(x;\,k) = \frac{\gamma(\frac{k}{2},\,\frac{x}{2})}{\Gamma(\frac{k}{2})} = P\left(\frac{k}{2},\,\frac{x}{2}\right)
+\end{equation}
+```
+Kur $\gamma(s,t)$ yra žemesnė nepilna gamma funkcija, o $P(s,t)$ yra normalizuota nepilna gamma funkcija.
+
+## 3 užduotis
+
+\begin{equation}
+\text{Vidurkis: } \mu = k
+\end{equation} \begin{equation}
+\text{Dispersija: } \sigma^2 = 2k
+\end{equation} \begin{equation}
+\text{Asimetrijos koeficientas: } \gamma_1 = \frac{2}{\sqrt{k}}
+\end{equation} \begin{equation}
+\text{Eksceso koeficientas: } \gamma_2 = \frac{6}{k}
+\end{equation}
+
+## 4 užduotis
+
+Brėžiame tankio funkcijų grafiką.
+
+```{r}
+library(ggplot2)
+
+x <- seq(0, 50, 0.1)
+
+y1 <- dchisq(x, df = 4)
+y2 <- dchisq(x, df = 8)
+y3 <- dchisq(x, df = 16)
+
+df1 <- data.frame(x = x, y = y1, df = 4)
+df2 <- data.frame(x = x, y = y2, df = 8)
+df3 <- data.frame(x = x, y = y3, df = 16)
+
+df <- rbind(df1, df2, df3)
+
+ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
+  geom_line(linewidth=1)+
+  scale_color_discrete(name = "Laisvės laipsnis")+
+  labs(y = "Tikimybių tankis",
+       x = "Reikšmės")+
+  theme_minimal()
+
+```
+
+Brėžiame pasiskirstymo funkcijų grafiką.
+
+```{r}
+y1 <- pchisq(x, df = 4)
+y2 <- pchisq(x, df = 8)
+y3 <- pchisq(x, df = 16)
+
+df1 <- data.frame(x = x, y = y1, df = 4)
+df2 <- data.frame(x = x, y = y2, df = 8)
+df3 <- data.frame(x = x, y = y3, df = 16)
+
+df <- rbind(df1, df2, df3)
+
+ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
+  geom_line(linewidth=1)+
+  scale_color_discrete(name = "Laisvės laipsnis")+
+  labs(y = "komuliatyvi tikimybė",
+       x = "Reikšmės")+
+  theme_minimal()
+
+```
+
+Didėjant laisvės laipsniui, chi kvadrato skirstinys vis labiau primena normaliąjį skirstinį. Esant mažesniam laisvės laipsnių skaičiui, skirstinys yra labiau asimetriškas.
+
+## 5 užduotis
+
+## Kvantilių funkcija
+
+\begin{equation}
+Q(p)=F^{-1} (p)
+\end{equation}
+
+čia:
+
+$Q(p)$ -- kvantilis tam tikram tikimybės lygiui $p$, $F^{-1}(p)$ -- atvirkštinė chi kvadrato pasiskirstymo funkcija.
+
+## Grafikas
+
+```{r}
+p_values <- seq(0.01, 0.99, 0.01)
+
+df_values <- c(4, 8, 16)
+
+df_list <- lapply(df_values, function(df) {
+  data.frame(p = p_values, q = qchisq(p_values, df), df = as.factor(df))
+})
+
+df <- do.call(rbind, df_list)
+
+ggplot(df, aes(x = p, y = q, color = df)) +
+  geom_line(linewidth = 1) +
+  scale_color_discrete(name = "Laisvės laipsniai") +
+  labs(title = "Chi kvadrato kvantilių funkcija ",
+       x = "Tikimybė (p)",
+       y = "Kvantilis Q(p)") +
+  theme_minimal()
+
+```
+
+Chi kvadrato pasiskirstymas su didesniu laisvės laipsniu tampa vis panašesnis į normalųjį pasiskirstymą, kuo didesnis laisvės laipsnis, tuo kvantiliai lėčiau auga ir įgauna vis simetriškesnę formą.

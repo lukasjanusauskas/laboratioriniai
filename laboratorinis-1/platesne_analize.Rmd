@@ -1,0 +1,104 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# 1 Laboratorinis darbas
+
+5 grupė: Arnas Kazanzvičius, Arnas Usonis, Lukas Janušauskas, Simonas Lapinskas
+
+Skirstinys: $\chi^2$
+
+11. Apskaičiavome 6 dalyje gautų duomenų rinkinių su 20, 50, 200, 1000 imčių dydžiais kvartillius. 
+
+```{r}
+imtis1_kvartiliai <- quantile(imtis1, c(0.25, 0.5, 0.75))
+imtis2_kvartiliai <- quantile(imtis2, c(0.25, 0.5, 0.75))
+imtis3_kvartiliai <- quantile(imtis3, c(0.25, 0.5, 0.75))
+imtis4_kvartiliai <- quantile(imtis4, c(0.25, 0.5, 0.75))
+
+print(list(imtis1_kvartiliai, imtis2_kvartiliai, imtis3_kvartiliai, imtis4_kvartiliai))
+```
+
+12. Prie 6 punkte gautų duomenų rinkinių pridėjome po 5 išskirtis.
+
+Visų pirma paskaičiuokime apskaičiuokime išskirčių klasifikavimo ribas, remiantis
+kvartilių metodu:
+
+```{r}
+imtis1_ribos <- c(imtis1_kvartiliai[1] - 3 * IQR(imtis1),
+                  imtis1_kvartiliai[3] + 3 * IQR(imtis1))
+
+imtis2_ribos <- c(imtis2_kvartiliai[1] - 3 * IQR(imtis2),
+                  imtis2_kvartiliai[3] + 3 * IQR(imtis2))
+
+imtis3_ribos <- c(imtis3_kvartiliai[1] - 3 * IQR(imtis3),
+                  imtis3_kvartiliai[3] + 3 * IQR(imtis3))
+
+imtis4_ribos <- c(imtis4_kvartiliai[1] - 3 * IQR(imtis4),
+                  imtis4_kvartiliai[3] + 3 * IQR(imtis4))
+
+print(list(imtis1_ribos, imtis2_ribos, imtis3_ribos, imtis4_ribos))
+```
+Kad galėtume atpažinti vėliau, patikrinkime, duomenų amplitiudes
+
+```{r}
+sapply(imtys,
+       function(x) paste(length(x), 
+                         "imties dyio amplitiudė:", 
+                         min(x), "-", max(x))
+       )
+```
+
+```{r}
+imtis1_isskirtys <- c(imtis1, 25, 30, 35, 40, 43)
+imtis2_isskirtys <- c(imtis2, 18, 20, 21, 23, 24)
+
+# Kadangi jau pačiose imtyse yra išskirčių(matome iš amplitiudžių ir kvartilių testo)
+# Paimame didesnes išskirtis, kad lengviau išskirtume, ką pridėjome, o kas jau buvo
+imtis3_isskirtys <- c(imtis3, 30, 34, 39, 42, 43)
+imtis4_isskirtys <- c(imtis4, 35, 39, 42, 46, 48)
+```
+
+13. Nubraižėme po stačiakampę diagramą kiekvienam 12 dalies duomenų rinkiniui
+
+```{r}
+par(mfrow=c(2,2))
+
+boxplot(imtis1_isskirtys)
+boxplot(imtis2_isskirtys)
+boxplot(imtis3_isskirtys)
+boxplot(imtis4_isskirtys)
+```
+Stačiakampės diagramos identifikuoja įrašytas išskirtis.
+
+14. Grafiškai palyginome 6 punkte gautas histogramas su normaliojo skirstinio tankiu.
+
+Kad galėtume grafiškai palyginti, mums reikia x ašių. Jas gauti pasitelkėme funkciją `seq`.
+```{r}
+imtis1_seq <- seq(min(imtis1), max(imtis1))
+imtis2_seq <- seq(min(imtis2), max(imtis2))
+imtis3_seq <- seq(min(imtis3), max(imtis3))
+imtis4_seq <- seq(min(imtis4), max(imtis4))
+```
+
+
+```{r}
+par(mfrow=c(2,2))
+hist(imtis1, freq = FALSE)
+lines(dnorm(imtis1_seq, mean = mean(imtis1), 
+                       sd = sd(imtis1)), type = "l", col = "red")
+                       
+hist(imtis2, freq = FALSE)
+lines(dnorm(imtis2_seq, mean = mean(imtis2), 
+                       sd = sd(imtis2)), type = "l", col = "red")
+                       
+hist(imtis3, freq = FALSE)
+lines(dnorm(imtis3_seq, mean = mean(imtis3), 
+                       sd = sd(imtis3)), type = "l", col = "red")
+                       
+hist(imtis4, freq = FALSE)
+lines(dnorm(imtis4_seq, mean = mean(imtis4), 
+                       sd = sd(imtis4)), type = "l", col = "red")
+```

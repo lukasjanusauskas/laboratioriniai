@@ -1,0 +1,168 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+6.  Fiksavome, pasirinktą a.d. parametrų rinkinį (`k=5`). Sugeneravome $\chi^2_5$ duomenų rinkinius su 20, 50, 200, 1000 imčių dydžiais.
+
+```{r}
+k <- 5
+n <- c(20, 50, 200, 1000)
+
+set.seed(42)
+
+imtis1 <- rchisq(n[1], k)
+imtis2 <- rchisq(n[2], k)
+imtis3 <- rchisq(n[3], k)
+imtis4 <- rchisq(n[4], k)
+```
+
+6a) Nubrėžėme histogramas
+
+```{r}
+# Apibrėžiame pagalbinę funkciją, kadangi grafikai labai panašūs
+plot_chisq_sample <- function(sample) {
+  # sample - imtis, kurią įdedame į funkciją
+  
+  # Sudarome pavadinimą, į kurį įeis imties dydis
+  imties_dydis <- length(sample)
+  pavadinimas <- paste0("Imties dydis: ", imties_dydis)
+  
+  # Nubrėžiame histogramą
+  hist(sample, main=pavadinimas,
+       xlab = "X", ylab = "",
+       freq = TRUE)
+}
+
+par(mfrow=c(2,2))
+plot_chisq_sample(imtis1)
+plot_chisq_sample(imtis2)
+plot_chisq_sample(imtis3)
+plot_chisq_sample(imtis4)
+```
+
+6b) Empirinės pasiskirstymo funkcijos mūsų darbe imčių pasiskistymo funkcijos pateikiamos su teorine pasiskirstymo funkcija.
+
+```{r}
+nubrezti_chisq_empirini <- function(sample, df=5) {
+  # sample - imtis.
+  # df - chi kvadratu parametras
+  
+  # Sudarome pavadinimą
+  imties_dydis <- length(sample)   
+  pavadinimas <- paste0("Imties dydis: ", imties_dydis)
+  
+  # Nubrėžiame empirinę pasiskirstymo funkciją
+  plot(ecdf(sample), main=pavadinimas)
+  
+  # Nubrėžiame teorinę pasiskirstymo funkciją
+  x <- seq(min(sample), max(sample), by=0.01)
+  lines(x, pchisq(x, df), col = 'red')
+}
+
+par(mfrow=c(2,2))
+
+suppressWarnings({
+  nubrezti_chisq_empirini(imtis1)
+  nubrezti_chisq_empirini(imtis2)
+  nubrezti_chisq_empirini(imtis3)
+  nubrezti_chisq_empirini(imtis4)
+})
+```
+
+Nubrėžę empirines pasiskirstymo funkcijas pastebime, kad didesnių imčių empirinės pasiskirstymo funkcijos geriau aproksimuoja tikrąją p.f.
+
+7.  Momentų metodu išvestas parametro $k$ įvertinys:
+
+Remiantis 3. punktu prisimename, kad $EX = k$. Pirmasis žingsnis, sudarant įverčius momentų metodu yra momentų prilyginimas empiriniams momentams. Taigi $EX$ prilyginame $\overline{X}$. Gauname parametro $k$ įvertinį $\widetilde{k}$:
+
+```{=tex}
+\begin{equation}
+  \widetilde{k} = \overline{X}
+\end{equation}
+```
+```{r}
+imtys <- list(imtis1, imtis2, imtis3, imtis4)
+
+sapply(imtys, function(x) 
+  paste(length(x), "dydžio imties parametro įvertinys", mean(x)))
+```
+
+Vėl, kuo didesnė imtis, tuo geriau aproksimuojame skirstinio parametrą $k$. 
+
+8.  Didžiausio tikėtinumo metodu taip pat gavome įverčius. Tačiau, kadangi skaičiavimai per daug komplikuoti, naudojomės `optim` funkcija.
+
+```{r}
+# install.packages('likelihoodExplore')
+library(likelihoodExplore)
+
+pakoreguota_tiketinumo <- function(x, par) {
+  # Pakoreguojame tikėtinumo funkciją, kad tiktų optim funkcijai
+  return( -1 * likchisq(x=x, df=par) )
+}
+
+mle_chisq_ivertis <- function(imtis) {
+  res <- optim(par=c(1),                  # Pradedame nuo 1
+               fn=pakoreguota_tiketinumo, # Pakoreguojame tikėtinumo funkciją
+               method="L-BFGS-B",         # Naudojame L-BFGS optimizatorių
+               x=imtis)
+  return ( res$par )
+}
+
+
+sapply(imtys, function(x) 
+  paste(length(x), "dydžio imties parametro įvertinys", mle_chisq_ivertis(x)))
+
+```
+
+9.  Palyginkime 7 ir 8 punktuose gautus rezultatus
+
+Nors, davus mažą imtį, gauti geresni rezultatai, panaudojus didžiausio tikėtinumo metodą, tačiau momentų metodo įverčiai, iš rezultatų atrodo, greičiau konverguoja link tikrojo parametro(5).
+Be abejo, abejais atvejais kuo didesnė imtis, tuo geresnė parametro aproksimacija.
+
+10. Parametrų patikimumo intervalai
+
+Iš $\chi^2$ apibrėžimo žinome, kad a.d. $X \sim \chi^2_k$, jei $X = \sum_{i=1}^{k} N_i$, kur $N_i \sim N(0,1)$. Todėl, $n$ dydžio imties empirinio vidurkio skirstinį nustatome štai taip:
+
+\begin{equation}
+\centering
+  n\overline{X} = \sum_{j=1}^n X_j = \sum_{j=1}^n \sum_{i=1}^k N_{ji}
+\end{equation}
+
+Kadangi kiekvienas $N_{ji}$ yra pasiskirstęs pagal standartinį normalųjį skirstinį, tai vėl gauname $\chi^2$ skirstinį:
+
+```{=tex}
+\begin{equation}
+  \centering
+  n\overline{X} \sim \chi^2_{nk}
+\end{equation}
+```
+Taigi, pasikliautinio intervalo skaičiavimas (čia $x_p$ - p-tasis $\chi^2_{nk}$ kvartilis):
+
+\begin{equation}
+  P(x_{(1- \alpha)/2} < n\hat{k} < x_{(1 + \alpha)/2} )
+\end{equation}
+\begin{equation}
+  P(\frac{x_{(1- \alpha)/2}}{n} < \hat{k} < \frac{ x_{(1 + \alpha)/2} }{n})
+\end{equation}
+
+```{r}
+confidence_interval_chisq <- function(sample, alpha) {
+  lower <- (1 - alpha) / 2
+  upper <- (1 + alpha) / 2
+  
+  lower_b <- qchisq(lower, sum(sample)) / length(sample)
+  upper_b <- qchisq(upper, sum(sample)) / length(sample)
+
+  return( c(lower_b, upper_b) )
+}
+
+lapply(imtys, function(x) 
+  paste(length(x), "dydžio imties parametro pasikliautinio intervalo rėžiai",
+        confidence_interval_chisq(x, 0.9)))
+```
+
+Matome, kad 50 objektų imtyje patikimumo intervalas pasislinko į kairę.
+Nors didesnės imties patikimumo intervalo apatinis rėžis yra toliau, turime turėti omenyje, kad vidurkis yra mažesnis,
+todėl ne patikimumo intervalas yra platesnis, bet. Vietoj to reikėtų pažiūrėti į aplitiudę intervalo.
