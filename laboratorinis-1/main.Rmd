@@ -271,9 +271,9 @@ nubrezti_chisq_empirini <- function(samples, k=5) {
   # Nubrėžiame teorinę pasiskirstymo funkciją
   df %>% 
     ggplot(aes(x = seq.x)) +
-      geom_line(aes(y = ecdf.x..seq.x., color="Empirinė p.f."), 
-                linewidth = 1) +
       geom_line(aes(y = pchisq.seq.x..k., color="Teorinė p.f."),
+                linewidth = 1) +
+      geom_line(aes(y = ecdf.x..seq.x., color="Empirinė p.f."), 
                 linewidth = 1) +
     facet_wrap(~Imties.dydis, scales = "free") +
     theme_minimal() +
@@ -340,50 +340,36 @@ Nors, davus mažą imtį, gauti geresni rezultatai, panaudojus didžiausio tikė
 Be abejo, abejais atvejais kuo didesnė imtis, tuo geresnė parametro aproksimacija.
 
 ## 10 užduotis
+Parametrų patikimumo intervalai
 
-Iš $\chi^2$ apibrėžimo žinome, kad a.d. $X \sim \chi^2_k$, jei $X = \sum_{i=1}^{k} N_i$, kur $N_i \sim N(0,1)$. Todėl, $n$ dydžio imties empirinio vidurkio skirstinį nustatome štai taip:
-
-\begin{equation}
-\centering
-  n\overline{X} = \sum_{j=1}^n X_j = \sum_{j=1}^n \sum_{i=1}^k N_{ji}
-\end{equation}
-
-Kadangi kiekvienas $N_{ji}$ yra pasiskirstęs pagal standartinį normalųjį skirstinį, tai vėl gauname $\chi^2$ skirstinį:
-
-```{=tex}
-\begin{equation}
-  \centering
-  n\overline{X} \sim \chi^2_{nk}
-\end{equation}
-```
-Taigi, pasikliautinio intervalo skaičiavimas (čia $x_p$ - p-tasis $\chi^2_{nk}$ kvartilis):
-
-\begin{equation}
-  P(x_{(1- \alpha)/2} < n\hat{k} < x_{(1 + \alpha)/2} )
-\end{equation}
-\begin{equation}
-  P(\frac{x_{(1- \alpha)/2}}{n} < \hat{k} < \frac{ x_{(1 + \alpha)/2} }{n})
-\end{equation}
+Pasikliautiniams intervalams nustatyti naudojome procentinį bootstrap metodą.
 
 ```{r}
-confidence_interval_chisq <- function(sample, alpha) {
-  lower <- (1 - alpha) / 2
-  upper <- (1 + alpha) / 2
-  
-  lower_b <- qchisq(lower, sum(sample)) / length(sample)
-  upper_b <- qchisq(upper, sum(sample)) / length(sample)
+library(boot)
 
-  return( c(lower_b, upper_b) )
+mean_mod <- function(data, idx) { 
+  # Modifikuojame vidurkio funkciją, kad galėtume gauti bootstrap imtis
+  return(mean(data[idx]))
 }
 
-lapply(imtys, function(x) 
-  paste(length(x), "dydžio imties parametro pasikliautinio intervalo rėžiai",
-        confidence_interval_chisq(x, 0.9)))
+bootstrap_ci <- function(sample) {
+  bootstrap <- boot(sample, mean_mod, R = 100)
+  boot_ci_output <- boot.ci(boot.out=bootstrap, type="perc")
+  
+  print(paste("Imties ", length(sample), " pasikliautiniai intervalai"))
+  print(boot_ci_output$perc[c(4 ,5)] )
+}
+
+bootstrap_ci(imtis1)
+bootstrap_ci(imtis2)
+bootstrap_ci(imtis3)
+bootstrap_ci(imtis4)
 ```
 
-Matome, kad 50 objektų imtyje patikimumo intervalas pasislinko į kairę.
-Nors didesnės imties patikimumo intervalo apatinis rėžis yra toliau, turime turėti omenyje, kad vidurkis yra mažesnis,
-todėl ne patikimumo intervalas yra platesnis, bet. Vietoj to reikėtų pažiūrėti į aplitiudę intervalo.
+Pastebime, kad patikimumo intervalas vis arčiau prilimpa tikrojo parametro - 5.
+Matome, kad 50 objektų imtyje patikimumo intervalas pasislinko į kairę(palyginus su 20).
+Nors didesnės imties patikimumo intervalo apatinis rėžis yra toliau, turime turėti omenyje,
+kad vidurkis tiesiog gavosi mažesnis. 
 
 ## 11 užduotis
 
