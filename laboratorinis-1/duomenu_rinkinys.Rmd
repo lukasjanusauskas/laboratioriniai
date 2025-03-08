@@ -1,1 +1,34 @@
-# Karoče demonstracija
+# 14 užduotis
+
+Paprastai, $\chi^2$ skistinys yra naudojamas $\chi^2$ testui, tačiau taip pat normaliojo skirstinio imties dispersiją galime modeliuoti pagal $\chi^2$ skirsinį:
+
+```{=tex}
+\begin{equation}
+  \frac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1}
+\end{equation}
+```
+
+Pavyzdžiui paimkime žinomą duomenų rinkinį: vyno kokybės.
+
+```{r}
+library(boot)
+library(latex2exp)
+
+wine.quality <- read.csv('WineQT.csv')
+
+var_pop <- var(wine.quality$pH)
+n <- 10
+var_sample <- sapply(1:1000, function(x) var(sample(wine.quality$pH, n)))
+
+chi_sq_example <- data.frame(var_sample / var_pop * (n-1))
+colnames(chi_sq_example) <- c("Sample variance")
+
+chi_sq_example %>% 
+  ggplot(aes(x = `Sample variance`)) +
+  geom_histogram(aes(y=after_stat(density)), 
+                 color='#619CFF', fill='#dfebff') +
+  stat_function(fun = dchisq, args = c(n-1), color="#F8766D") +
+  theme_minimal() +
+  labs(y = "", x = "",
+       title = TeX("$\\frac{S^{2} (n-1)}{\\sigma^{2}}$ pasiskirstymas"))
+```
