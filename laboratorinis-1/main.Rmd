@@ -4,12 +4,40 @@ output:
   html_document: default
 ---
 
-# 1 Laboratorinis darbas
 
-5 grupė: Arnas Kazanzvičius, Arnas Usonis, Lukas Janušauskas, Simonas Lapinskas
+![](VU.png)
+\makeatletter
 
-Skirstinys: $\chi^2$
+\begin{center}
+\vskip 20pt
+\textbf{\bf \large VILNIAUS UNIVERSITETAS}
+\vskip 10pt
+\textbf{\large MATEMATIKOS IR INFORMATIKOS FAKULTETAS}
+\vskip 10pt
+\textbf{\MakeUppercase{Duomenų mokslo \space studijų programa}}
 
+\vskip 80pt
+  \Large Laboratorinis darbas
+\vskip 20pt
+  \textbf{\Large $\chi^2$ skirstinio pristatymas}
+\end{center}
+\vskip 80pt
+
+\begin{flushright}
+\Large \textbf{5 grupė}
+\vskip 10pt
+\Large Lukas Janušauskas, Arnas Kazanavičius,\\ Simonas Lapinskas, Arnas Usonis
+\end{flushright}
+\normalsize
+
+\vfill
+
+\begin{center}
+\textbf{\large Vilnius \\}
+\textbf{\large \the\year{}}
+\end{center}
+
+\newpage
 
 ```{r setup, include=FALSE}
 pdf.options(encoding='ISOLatin2.enc')
@@ -199,12 +227,10 @@ imtys <- list(imtis1, imtis2, imtis3, imtis4)
 
 ### Nubrėžėme histogramas
 
-```{r dev="pdf", dev.args=list(encoding="ISOLatin7.enc")}
+```{r dev="pdf", dev.args=list(encoding="ISOLatin7.enc"), warning=FALSE, message=FALSE}
 # Apibrėžiame pagalbinę funkciją, kadangi grafikai labai panašūs
-suppressWarnings({
-  library(tidyr)
-  library(dplyr)
-})
+library(tidyr)
+library(dplyr)
 
 plot_chisq_sample <- function(samples) {
   # samples - imčių vektorius
