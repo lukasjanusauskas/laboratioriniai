@@ -566,7 +566,7 @@ df %>%
          title=TeX("$\\chi^2$ histogramų ir normaliojo palyginimas"))
 
 ```
-Matome, kad didėjant imties dydžiui, historigrama vis tiksliau atitinka normaliojo skirstinio tankį.
+Matome, kad didėjant imties dydžiui, historigrama vis tiksliau atitinka chi² skirstinį.
 
 # 14 užduotis
 
