@@ -57,28 +57,30 @@ Matematiškai, jei $Z_1, Z_2, ..., Z_k$ yra nepriklausomi standartiniai normalie
   X = \sum_{i=1}^{k} Z_i^2 \sim \chi^2(k) 
 \end{equation}
 
+ $\chi^2$ skirtinys buvo pirmą kartą atrastas Vokiečių statistiko Fredriko Roberto Helmerto 1875-6 metais, bet vėliau šį skirstinį nepriklausomai iš naujo atrado anglų matematikas Karlas Pirsonas, nagrinėdamas suderinamumo testą(angl. goodness of fit testas).
+Kuriam jis sukūrė savo Pirsono $\chi^2$ testą(chi-squared test).
+
 ### Taikymas
 
 Chi kvadrato skirstinys yra labai svarbus statistikoje, ypač hipotezių tikrinimui ir dispersijos analizei.
 
+Researchers used the chi-square test to study Mendelian inheritance patterns, validating the laws of
+inheritance proposed by Gregor Mende
+
 1.  $\chi^2$ nepriklausomumo testas
 
-Naudojamas nustatyti, ar duomenų lentelės kintamieji yra nepriklausomi.
+Šis testas dažniausiai naudojamas nustatyti, ar yra ryšys tarp kategorinių kintamųjų.
+Dažnas panaudojimo atvejis: bioinformatika. Tyrėjai testą naudoja lyginti tam tikrų genų savybių (pvz., genomo turinio, mutacijų dažnio ir kt. ) pasiskirstymą skirtingose kategorijose (pvz., ligų genai, būtini genai, tam tikroje chromosomoje esantys genai ir kt.).[@Feldman2008-dq]
 
-Pvz., ar žmonių rūkymo įpročiai priklauso nuo jų lyties?
+2.  Suderinanumo testas(angl. goodness of fit test)
 
-2.  Suderinanumo testas
+Šis testas naudojamas tikrinti, ar statisiškai reikšmingai duoti duomenys seka teorinį pasiskirstymą.
+Šį testą galima taikyti SEM(angl. Structural Equation Modelling) modelių įvertinimui.
+Jie yra plačiai naudojami socialinių mokslų srityse, modeliuojant labai abstrakčius objektus tokius, kaip idelogija, demokratija ar tolerancija. [@zheng2024enhancingmodelfitevaluation]
 
-Tikrina, ar stebėti duomenys atitinka teorinį pasiskirstymą.
+Skirtumas tarp čių dviejų testų: nepriklausomumo testas tikrina, ar yra ryšys tarp dviejų kategorinių kintamųjų, o suderinanamumo - ar pasiskirstymas
 
-Pvz., ar kauliuko metimo rezultatai atitinka tolygų pasiskirstymą?
-
-3.  Dispersijos analizė
-
-Naudojamas pasikliautiniams intervalams populiacijos dispersijai įvertinti.
-
-Pvz., ar skirtingose mokyklose mokinių pažymių dispersija yra vienoda?
-
+\newpage
 ## 2 užduotis
 
 ### Tankio funkcija: ( [@kruopistextbook] 3.8 formulė)
@@ -131,7 +133,8 @@ Prieš braižant tankio ir pasiskirstymo funkcijas paminime svarbią teoremą ([
 
 Taigi, $\chi^2$ skirstinys konverguoja į normalųjį, kai $n\rightarrow \infty$.
 
-Brėžiame tankio funkcijų grafiką.
+\newpage
+### Brėžiame tankio funkcijų grafiką.
 
 ```{r dev="pdf", dev.args=list(encoding="ISOLatin7.enc")}
 library(ggplot2)
@@ -160,7 +163,8 @@ ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
 
 ```
 
-Brėžiame pasiskirstymo funkcijų grafiką.
+\newpage
+### Brėžiame pasiskirstymo funkcijų grafiką.
 
 ```{r dev="pdf", dev.args=list(encoding="ISOLatin7.enc")}
 y1 <- pchisq(x, df = 4)
@@ -202,7 +206,7 @@ $x(p)$ -- kvantilis tam tikram tikimybės lygiui $p$, $F^{-1}(p)$ -- atvirkštin
 
 ### Grafikas
 
-```{r dev="pdf", dev.args=list(encoding="ISOLatin7.enc")}
+```{r dev="pdf", fig.height=3.5, dev.args=list(encoding="ISOLatin7.enc")}
 p_values <- seq(0.01, 0.99, 0.01)
 
 df_values <- c(4, 8, 16)
@@ -227,6 +231,7 @@ Chi kvadrato pasiskirstymas su didesniu laisvės laipsniu tampa vis panašesnis 
 
 Tai suprantame kaip pasėkmę (8) teiginio.
 
+\newpage
 ## 6 užduotis
 
 Fiksavome, pasirinktą a.d. parametrų rinkinį (`k=5`). Sugeneravome $\chi^2_5$ duomenų rinkinius su 20, 50, 200, 1000 imčių dydžiais.
@@ -568,7 +573,7 @@ df %>%
 ```
 Matome, kad didėjant imties dydžiui, historigrama vis tiksliau atitinka chi² skirstinį.
 
-# 14 užduotis
+# 15 užduotis
 
 Paprastai, $\chi^2$ skistinys yra naudojamas $\chi^2$ testui, tačiau taip pat normaliojo skirstinio imties dispersiją galime modeliuoti pagal $\chi^2$ skirsinį:
 
