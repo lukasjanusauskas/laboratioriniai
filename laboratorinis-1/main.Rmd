@@ -2,6 +2,8 @@
 output:
   pdf_document: default
   html_document: default
+bibliography:
+  bibliografija.bib
 ---
 
 
@@ -46,9 +48,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1 užduotis
 
-Chi kvadrato skirstinys (žymimas $\chi^2(k)$) yra tikimybinis skirstinys, kuris atsiranda sumuojant k Nepriklausomų normaliųjų kintamųjų kvadratai (kai vidurkis 0, o dispersija 1).
+Chi kvadrato skirstinys (žymimas $\chi^2(k)$) yra tikimybinis skirstinys, kuris atsiranda sumuojant k nepriklausomų normaliųjų standartinių kintamųjų kvadratų.
 
-Matematiškai, jei $Z_1, Z_2, ..., Z_k$ yra nepriklausomi standartiniai normalieji atsitiktiniai dydžiai (tai tokie tokie dydžiai kurių vidurkis 0 ir dispersija 1): $Z_i \sim N(0,1)$ tada jų kvadratų suma seka chi kvadrato skirstinį su k laisvės laipsniais: \begin{equation} 
+
+Matematiškai, jei $Z_1, Z_2, ..., Z_k$ yra nepriklausomi standartiniai normalieji atsitiktiniai dydžiai (tai tokie tokie dydžiai kurių vidurkis 0 ir dispersija 1): $Z_i \sim N(0,1)$ tada jų kvadratų suma seka chi kvadrato skirstinį su k laisvės laipsniais ([@kruopistextbook] 1.7 skyrelis):
+
+\begin{equation} 
   X = \sum_{i=1}^{k} Z_i^2 \sim \chi^2(k) 
 \end{equation}
 
@@ -56,13 +61,13 @@ Matematiškai, jei $Z_1, Z_2, ..., Z_k$ yra nepriklausomi standartiniai normalie
 
 Chi kvadrato skirstinys yra labai svarbus statistikoje, ypač hipotezių tikrinimui ir dispersijos analizei.
 
-1.  Chi kvadrato nepriklausomumo testas
+1.  $\chi^2$ nepriklausomumo testas
 
 Naudojamas nustatyti, ar duomenų lentelės kintamieji yra nepriklausomi.
 
 Pvz., ar žmonių rūkymo įpročiai priklauso nuo jų lyties?
 
-2.  Gerumo įvertinimo testas
+2.  Suderinanumo testas
 
 Tikrina, ar stebėti duomenys atitinka teorinį pasiskirstymą.
 
@@ -76,7 +81,7 @@ Pvz., ar skirtingose mokyklose mokinių pažymių dispersija yra vienoda?
 
 ## 2 užduotis
 
-### Tankio funkcija:
+### Tankio funkcija: ( [@kruopistextbook] 3.8 formulė)
 
 ```{=tex}
 \begin{equation}
@@ -86,7 +91,10 @@ f(x;\,k) =
 \end{cases}
 \end{equation}
 ```
-Kur $display="\Gamma(k/2)$ reiškia gamma funkciją, kuri turi uždaras formas (užbaigtas išraiškas) reikšmėms sveikaisiais $k$.
+Kur $display="\Gamma(k/2)$ yra Oilerio gama funkcija.
+Ji turi uždarą formą su natūraliais $\frac{k}{2}$:
+
+\[ \Gamma(\frac{k}{2}) = (\frac{k}{2} - 1)! \]
 
 ### Pasiskirstymo funkcija:
 
@@ -95,21 +103,33 @@ Kur $display="\Gamma(k/2)$ reiškia gamma funkciją, kuri turi uždaras formas (
 F(x;\,k) = \frac{\gamma(\frac{k}{2},\,\frac{x}{2})}{\Gamma(\frac{k}{2})} = P\left(\frac{k}{2},\,\frac{x}{2}\right)
 \end{equation}
 ```
-Kur $\gamma(s,t)$ yra žemesnė nepilna gamma funkcija, o $P(s,t)$ yra normalizuota nepilna gamma funkcija.
+Kur $\gamma(s,t)$ yra apatinė nepilna gamma funkcija, o $P(s,t)$ yra normalizuota nepilna gamma funkcija.
 
 ## 3 užduotis
+
+Skaitinės charakteristikos ( [@kruopistextbook] 3.9 apibrėžimas )
 
 \begin{equation}
 \text{Vidurkis: } \mu = k
 \end{equation} \begin{equation}
 \text{Dispersija: } \sigma^2 = 2k
 \end{equation} \begin{equation}
-\text{Asimetrijos koeficientas: } \gamma_1 = \frac{2}{\sqrt{k}}
+\text{Asimetrijos koeficientas: } \gamma_1 = \frac{2\sqrt{2}}{\sqrt{k}}
 \end{equation} \begin{equation}
-\text{Eksceso koeficientas: } \gamma_2 = \frac{6}{k}
+\text{Eksceso koeficientas: } \gamma_2 = \frac{12}{k}
 \end{equation}
 
 ## 4 užduotis
+
+Prieš braižant tankio ir pasiskirstymo funkcijas paminime svarbią teoremą ([@kruopistextbook] 4.16 teorema ) apie $\chi^2$ skirstinio konvergavimą į normalųjį, kai $n \rightarrow \infty$.
+
+```{=tex}
+\begin{equation}
+  \frac{ \chi^2_n - n }{\sqrt{2n}} \rightarrow Z \sim N(0,1)
+\end{equation}
+```
+
+Taigi, $\chi^2$ skirstinys konverguoja į normalųjį, kai $n\rightarrow \infty$.
 
 Brėžiame tankio funkcijų grafiką.
 
@@ -164,6 +184,9 @@ ggplot(data=df, aes(x = x, y = y, color = as.factor(df)))+
 ```
 
 Didėjant laisvės laipsniui, chi kvadrato skirstinys vis labiau primena normaliąjį skirstinį. Esant mažesniam laisvės laipsnių skaičiui, skirstinys yra labiau asimetriškas.
+Tai byloja tiek pasiskirstymo, tiek tankio funkcijų grafikai.
+
+Tai suprantame kaip pasėkmę (8) teiginio.
 
 ## 5 užduotis
 
@@ -201,6 +224,8 @@ ggplot(df, aes(x = p, y = q, color = df)) +
 ```
 
 Chi kvadrato pasiskirstymas su didesniu laisvės laipsniu tampa vis panašesnis į normalųjį pasiskirstymą, kuo didesnis laisvės laipsnis, tuo kvantiliai lėčiau auga ir įgauna vis simetriškesnę formą.
+
+Tai suprantame kaip pasėkmę (8) teiginio.
 
 ## 6 užduotis
 
@@ -576,4 +601,11 @@ chi_sq_example %>%
   theme_minimal() +
   labs(y = "", x = "",
        title = TeX("$\\frac{S^{2} (n-1)}{\\sigma^{2}}$ pasiskirstymas"))
+```
+
+
+## Bibliografija
+
+```{=tex}
+\vskip 20pt
 ```
