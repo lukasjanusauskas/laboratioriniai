@@ -57,15 +57,10 @@ Matematiškai, jei $Z_1, Z_2, ..., Z_k$ yra nepriklausomi standartiniai normalie
   X = \sum_{i=1}^{k} Z_i^2 \sim \chi^2(k) 
 \end{equation}
 
- $\chi^2$ skirtinys buvo pirmą kartą atrastas Vokiečių statistiko Fredriko Roberto Helmerto 1875-6 metais, bet vėliau šį skirstinį nepriklausomai iš naujo atrado anglų matematikas Karlas Pirsonas, nagrinėdamas suderinamumo testą(angl. goodness of fit testas).
-Kuriam jis sukūrė savo Pirsono $\chi^2$ testą(chi-squared test).
+ $\chi^2$ skirtinys buvo pirmą kartą atrastas Vokiečių statistiko Fredriko Roberto Helmerto 1875-6 metais, tiriant normalių imčių dispersijų pasiskirstymą. 
+Vėliau šį skirstinį nepriklausomai iš naujo atrado anglų matematikas Karlas Pirsonas(angl. Karl Pearson), nagrinėdamas suderinamumo testą(angl. goodness of fit test), kuriam jis sukūrė savo Pirsono $\chi^2$ testą(angl. chi-squared test).
 
 ### Taikymas
-
-Chi kvadrato skirstinys yra labai svarbus statistikoje, ypač hipotezių tikrinimui ir dispersijos analizei.
-
-Researchers used the chi-square test to study Mendelian inheritance patterns, validating the laws of
-inheritance proposed by Gregor Mende
 
 1.  $\chi^2$ nepriklausomumo testas
 
@@ -77,8 +72,6 @@ Dažnas panaudojimo atvejis: bioinformatika. Tyrėjai testą naudoja lyginti tam
 Šis testas naudojamas tikrinti, ar statisiškai reikšmingai duoti duomenys seka teorinį pasiskirstymą.
 Šį testą galima taikyti SEM(angl. Structural Equation Modelling) modelių įvertinimui.
 Jie yra plačiai naudojami socialinių mokslų srityse, modeliuojant labai abstrakčius objektus tokius, kaip idelogija, demokratija ar tolerancija. [@zheng2024enhancingmodelfitevaluation]
-
-Skirtumas tarp čių dviejų testų: nepriklausomumo testas tikrina, ar yra ryšys tarp dviejų kategorinių kintamųjų, o suderinanamumo - ar pasiskirstymas
 
 \newpage
 ## 2 užduotis
@@ -93,7 +86,7 @@ f(x;\,k) =
 \end{cases}
 \end{equation}
 ```
-Kur $display="\Gamma(k/2)$ yra Oilerio gama funkcija.
+Kur $\Gamma(\frac{k}{2})$ yra Oilerio gama funkcija.
 Ji turi uždarą formą su natūraliais $\frac{k}{2}$:
 
 \[ \Gamma(\frac{k}{2}) = (\frac{k}{2} - 1)! \]
@@ -109,7 +102,7 @@ Kur $\gamma(s,t)$ yra apatinė nepilna gamma funkcija, o $P(s,t)$ yra normalizuo
 
 ## 3 užduotis
 
-Skaitinės charakteristikos ( [@kruopistextbook] 3.9 apibrėžimas )
+Skaitinės charakteristikos ( [@kruopistextbook] 3.9 formulės )
 
 \begin{equation}
 \text{Vidurkis: } \mu = k
@@ -571,7 +564,9 @@ df %>%
          title=TeX("$\\chi^2$ histogramų ir normaliojo palyginimas"))
 
 ```
-Matome, kad didėjant imties dydžiui, historigrama vis tiksliau atitinka chi² skirstinį.
+Žiūrėdami pagal didesnių imčių histogramas(geriau aproksimuoja tikrąjį $\chi^2$ skirstinį),
+pastebime, kad $\chi^2$ skirstinys skiriasi nuo normaliojo, nes jis yra labiau asimetriškas ir turi didesnį ekscesą(angl. kurtosis).
+Svarbu pažymėti, kad šie skirtumai nėra labai lengvai pastebimi, o jei $k$ - laisvės laipsnių skaičius būtų dar didesnis, tai skirtumas tarp $\chi^2$ ir normaliojo būtų dar mažesnis.
 
 # 15 užduotis
 
